@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Study Calendar</title>
+    <style>
+        body { font-family: Arial; }
+        h2 { text-align: center; }
+        table { border-collapse: collapse; width: 90%; margin: 20px auto; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+        th { background-color: #dce3f0; }
+        form.inline { display: inline; }
+        .controls { text-align: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>StudyBuddy Calendar</h2>
+
+    <div class="controls">
+        <form method="get" action="/calendar" class="inline">
+            <label for="category">Filter by category: </label>
+            <select name="category" id="category" onchange="this.form.submit()">
+                {% for cat in categories %}
+                    <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>
+                        {{ cat }}
+                    </option>
+                {% endfor %}
+            </select>
+            <noscript><button type="submit">Apply</button></noscript>
+        </form>
+        <br><br>
+        <a href="/add_homework">Add New Homework or Test</a> |
+        <a href="/set_difficulty">Set Course Difficulty</a>
+    </div>
+
+    <table>
+        <tr>
+            <th>Class</th>
+            <th>Difficulty</th>
+            <th>Assignment / Test</th>
+            <th>Category</th>
+            <th>Due Date</th>
+            <th>Countdown</th>
+            <th>Status</th>
+            <th>Update Status</th>
+            <th>Delete</th>
+        </tr>
+
+        {% if homework %}
+            {% for hw in homework %}
+                <tr>
+                    <td>{{ hw.class_name }}</td>
+                    <td>{{ hw.difficulty }}</td>
+                    <td>{{ hw.assignment_name }}</td>
+                    <td>{{ hw.category }}</td>
+                    <td>{{ hw.due_date }}</td>
+                    <td>
+                        {% if hw.days_left is not none %}
+                            {% if hw.days_left > 0 %}
+                                {{ hw.days_left }} days left
+                            {% elif hw.days_left == 0 %}
+                                Due today!
+                            {% else %}
+                                Overdue by {{ hw.days_left | abs }} days
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ hw.status }}</td>
+                    <td>
+                        <form method="post" action="/update_status" class="inline">
+                            <input type="hidden" name="homework_id" value="{{ hw.id }}">
+                            <input type="hidden" name="current_category" value="{{ selected_category }}">
+                            <select name="status">
+                                <option value="not started" {% if hw.status == "not started" %}selected{% endif %}>haven't started</option>
+                                <option value="in progress" {% if hw.status == "in progress" %}selected{% endif %}>in progress</option>
+                                <option value="done" {% if hw.status == "done" %}selected{% endif %}>done</option>
+                            </select>
+                            <button type="submit">Save</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" action="/delete_homework" class="inline">
+                            <input type="hidden" name="homework_id" value="{{ hw.id }}">
+                            <input type="hidden" name="current_category" value="{{ selected_category }}">
+                            <button type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="7">No homework or tests yet!</td>
+            </tr>
+        {% endif %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Homework / Test</title>
+    <style>
+        body { font-family: Arial; text-align: center; background: #f7f7f7; margin-top: 60px; }
+        form { background: white; display: inline-block; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
+        input, select { margin: 10px; padding: 8px; width: 80%; }
+        button { padding: 10px 20px; margin-top: 10px; }
+        a { display: block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Add Homework / Test</h2>
+    <form method="POST">
+        <input type="text" name="class_name" placeholder="Class Name" required><br>
+        <input type="text" name="assignment_name" placeholder="Homework / Test Name" required><br>
+        <input type="date" name="due_date" required><br>
+
+        <select name="category" required>
+            <option value="Homework">Homework</option>
+            <option value="Exam">Exam</option>
+            <option value="Quiz">Quiz</option>
+            <option value="Project">Project</option>
+            <option value="Other">Other</option>
+        </select><br>
+
+        <button type="submit">Add</button>
+    </form>
+
+    <a href="/calendar">Back to Calendar</a>
+</body>
+</html>
