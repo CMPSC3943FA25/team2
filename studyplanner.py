@@ -1,20 +1,26 @@
+"""This will import the libraries we need"""
+
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime, date
 import sqlite3
 
+
 app = Flask(__name__)
 
+#Function for checking login, will check if username and password match with what is inside of our tables
 def check_login(username, password):
-    conn = sqlite3.connect('student_db.db')
+    conn = sqlite3.connect('school.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM students WHERE username=? AND password=?", (username, password))
+    c.execute("SELECT * FROM students WHERE student_name=? AND student_password=?", (username, password))
     user = c.fetchone()
     conn.close()
     return user is not None
 
+#Function for our homepage
 @app.route('/')
 def home():
     return render_template('index.html')
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -26,11 +32,12 @@ def login():
     else:
         return "Invalid login."
 
+#this function takes data from our database table "homework" and then sends it to our calender
 @app.route('/calendar')
 def calendar():
     selected_category = request.args.get('category', 'all')
 
-    conn = sqlite3.connect('school_db.db')
+    conn = sqlite3.connect('school.db')
     c = conn.cursor()
 
     if selected_category != 'all':
@@ -71,9 +78,9 @@ def calendar():
             "days_left": days_left
         })
         
-    conn2 = sqlite3.connect('student_db.db')
+    conn2 = sqlite3.connect('school.db')
     c2 = conn2.cursor()
-    c2.execute("SELECT class_name, difficulty_level FROM class_difficulty WHERE student_id = 1")
+    c2.execute("SELECT class_id, difficulty FROM enrollment WHERE student_id = 1")
     diff_rows = c2.fetchall()
     conn2.close()
 
@@ -95,7 +102,7 @@ def update_status():
     hw_id = request.form['homework_id']
     new_status = request.form['status']
 
-    conn = sqlite3.connect('school_db.db')
+    conn = sqlite3.connect('school.db')
     c = conn.cursor()
     c.execute("UPDATE homework SET status = ? WHERE id = ?", (new_status, hw_id))
     conn.commit()
@@ -112,7 +119,7 @@ def add_homework():
         due_date = request.form['due_date']
         category = request.form['category']
 
-        conn = sqlite3.connect('school_db.db')
+        conn = sqlite3.connect('school.db')
         c = conn.cursor()
         c.execute(
             "INSERT INTO homework (class_name, due_date, assignment_name, category, status) VALUES (?, ?, ?, ?, ?)",
@@ -129,7 +136,7 @@ def add_homework():
 def delete_homework():
     hw_id = request.form['homework_id']
 
-    conn = sqlite3.connect('school_db.db')
+    conn = sqlite3.connect('school.db')
     c = conn.cursor()
     c.execute("DELETE FROM homework WHERE id = ?", (hw_id,))
     conn.commit()
@@ -146,7 +153,7 @@ def set_difficulty():
         class_name = request.form['class_name']
         difficulty_level = int(request.form['difficulty_level'])
 
-        conn = sqlite3.connect('student_db.db')
+        conn = sqlite3.connect('school.db')
         c = conn.cursor()
 
         c.execute("""
@@ -166,7 +173,7 @@ def set_difficulty():
 
         return redirect(url_for('set_difficulty'))
 
-    conn = sqlite3.connect('student_db.db')
+    conn = sqlite3.connect('school.db')
     c = conn.cursor()
     c.execute("""
         SELECT class_name, difficulty_level
