@@ -30,6 +30,7 @@ try:
     c.execute("""CREATE TABLE IF NOT EXISTS classes (
           class_id INTEGER PRIMARY KEY,
           class_name TEXT NOT NULL,
+          class_day REAL,
           class_time REAL
           )""")
     conn.commit()
@@ -63,3 +64,4 @@ finally:
 #--- IMPORTANT ---
 #We will not be using two databases to do this, we will have just one database and we will host three tables on it, one for student id, one for class id, and then one to link the individual students to their classes
 #I looked at previous code made and realized that if we use two databases we wont be able to properly link our student table in a student database to a classes table in a school database. 
+
