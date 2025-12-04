@@ -1,6 +1,6 @@
 import sqlite3
 
-conn = sqlite3.connect('student_db.db')
+conn = sqlite3.connect('school.db')
 c = conn.cursor()
 
 students = [
@@ -13,3 +13,4 @@ for s in students:
 conn.commit()
 conn.close()
 print("Sample students added.")
+
